@@ -23,12 +23,18 @@ def juego(ventana):
     ventana.nodelay(1)  # No bloquear al esperar input
     ventana.timeout(100)  # Velocidad del juego (ms)
 
-    cordenada_max_y, cordenada_max_x = ventana.getmaxyx()  # Tamaño de la ventana
-    x = cordenada_max_x//4
-    y = cordenada_max_y//2
-    serpiente = [[y, x]]
-    comida = [cordenada_max_y//2, cordenada_max_x//2]
+    max_y, max_x = ventana.getmaxyx()  # Tamaño de la ventana
+    serpiente = [[max_y // 2, max_x // 4]]
+    comida = [max_y // 2, max_x // 2]
     ventana.addstr(comida[0], comida[1], ' ')
+
+    # borde del juego/mapa
+    for i in range(1, max_x):
+        ventana.addch(max_y-2, i, '-')
+        ventana.addch(0, i, '-')
+    for j in range(1, max_y):
+        ventana.addch(j, max_x-2, '|')
+        ventana.addch(j, 0, '|')
 
     dx = 1
     dy = 0
@@ -56,16 +62,14 @@ def juego(ventana):
         serpiente.insert(0, nueva_cabeza)
 
         # Colisión con bordes o consigo misma
-        if (nueva_cabeza[0] in [0, cordenada_max_y] or
-            nueva_cabeza[1] in [0, cordenada_max_x] or
+        if (nueva_cabeza[0] in [0, max_y] or
+            nueva_cabeza[1] in [0, max_x] or
             nueva_cabeza in serpiente[1:]):
-            curses.endwin()
-            print("Game Over! Puntuación:", len(serpiente) - 1)
             break
 
         # Comer comida que se come con la boca
         if nueva_cabeza == comida:
-            comida = [random.randint(1, cordenada_max_y-2), random.randint(1, cordenada_max_x-2)]
+            comida = [random.randint(1, max_y - 5), random.randint(1, max_x - 5)]
             ventana.addstr(comida[0], comida[1], ' ')
         else:
             # Quitar cola
@@ -75,4 +79,3 @@ def juego(ventana):
         ventana.addch(serpiente[0][0], serpiente[0][1], curses.ACS_CKBOARD)
 
 curses.wrapper(juego)
-ventana.addstr(0, 2, f"Puntuación: {len(serpiente) - 1}")
