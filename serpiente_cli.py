@@ -17,6 +17,7 @@
 
 import curses
 import random
+import os
 
 def juego(ventana):
     curses.curs_set(0)  # Ocultar cursor
@@ -27,6 +28,7 @@ def juego(ventana):
     serpiente = [[max_y // 2, max_x // 4]]
     comida = [max_y // 2, max_x // 2]
     ventana.addstr(comida[0], comida[1], ' ')
+    puntaje:int = 0
 
     # borde del juego/mapa
     for i in range(1, max_x):
@@ -69,7 +71,8 @@ def juego(ventana):
 
         # Comer comida que se come con la boca
         if nueva_cabeza == comida:
-            comida = [random.randint(1, max_y - 5), random.randint(1, max_x - 5)]
+            comida = [random.randint(3, max_y - 5), random.randint(3, max_x - 5)]
+            puntaje += 1
             ventana.addstr(comida[0], comida[1], ' ')
         else:
             # Quitar cola
@@ -77,5 +80,24 @@ def juego(ventana):
             ventana.addch(cola[0], cola[1], ' ')
 
         ventana.addch(serpiente[0][0], serpiente[0][1], curses.ACS_CKBOARD)
+    return puntaje
 
-curses.wrapper(juego)
+
+def limpiar():
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
+def main():
+    limpiar()
+    print("-~"*15, "M~E~N~U", "~-"*15)
+    descicion = input("Quieres jugar? (s/n) \n=>> ").lower()
+    if descicion == 's':
+        limpiar()
+        puntos = curses.wrapper(juego)
+        print("===*"*10)
+        print(f"tu putaje final es {puntos}")
+
+if __name__ == "__main__":
+    main()
